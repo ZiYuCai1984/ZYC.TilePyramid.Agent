@@ -1,0 +1,35 @@
+﻿<Project>
+
+  <ItemGroup>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>_</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <V_ZYC_Framework_Alpha>1.5.9</V_ZYC_Framework_Alpha>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--//TODO-zyc Sync V_ZYC_TilePyramid_Core with this module !! --> 
+    <V_ZYC_TilePyramid_Core>0.9.1</V_ZYC_TilePyramid_Core>
+  </PropertyGroup>
+
+  <Import Project="$(USERPROFILE)\.nuget\packages\ZYC.Framework.Alpha\$(V_ZYC_Framework_Alpha)\build\nuget.props"
+          Condition="Exists('$(USERPROFILE)\.nuget\packages\ZYC.Framework.Alpha\$(V_ZYC_Framework_Alpha)\build\nuget.props')" />
+  <Import Project="$(USERPROFILE)\.nuget\packages\ZYC.Framework.Alpha\$(V_ZYC_Framework_Alpha)\build\nuget.targets"
+          Condition="Exists('$(USERPROFILE)\.nuget\packages\ZYC.Framework.Alpha\$(V_ZYC_Framework_Alpha)\build\nuget.targets')" />
+
+  <ItemGroup>
+    <PackageReference Update="ZYC.Framework.Alpha" Version="$(V_ZYC_Framework_Alpha)" />
+    <PackageReference Update="ZYC.Framework.Core" Version="$(V_ZYC_Framework_Alpha)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="ZYC.TilePyramid.Core" Version="$(V_ZYC_TilePyramid_Core)" />
+    <PackageReference Update="ZYC.TilePyramid.Wpf" Version="$(V_ZYC_TilePyramid_Core)" />
+    <PackageReference Update="ZYC.TilePyramid.Annotations" Version="$(V_ZYC_TilePyramid_Core)" />
+    <PackageReference Update="ZYC.TilePyramid.Annotations.Wpf" Version="$(V_ZYC_TilePyramid_Core)" />
+  </ItemGroup>
+
+</Project>

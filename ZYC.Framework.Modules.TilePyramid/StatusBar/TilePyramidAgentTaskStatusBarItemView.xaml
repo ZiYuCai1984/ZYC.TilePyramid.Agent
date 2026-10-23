@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="ZYC.Framework.Modules.TilePyramid.StatusBar.TilePyramidAgentTaskStatusBarItemView"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasTasks}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+    <Grid Margin="8 0">
+        <ToggleButton x:Name="TasksToggle"
+
+                      Padding="8 2"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      BorderBrush="Transparent"
+                      FocusVisualStyle="{x:Null}">
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <iconPacks:PackIconMaterial Kind="HeadSnowflakeOutline" 
+                                            Margin="0 0 8 0"/>
+                <TextBlock Text="{Binding Summary}" 
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </ToggleButton>
+        <Popup IsOpen="{Binding IsChecked, ElementName=TasksToggle, Mode=TwoWay}"
+               StaysOpen="False"
+               Placement="Top" PlacementTarget="{Binding ElementName=TasksToggle}">
+            <Border BorderBrush="{DynamicResource MahApps.Brushes.Gray7}"
+                    BorderThickness="1"
+                    Background="{DynamicResource MahApps.Brushes.ThemeBackground}">
+                <ContentControl x:Name="TaskListHost"
+                                Width="580"
+                                MaxHeight="500" />
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

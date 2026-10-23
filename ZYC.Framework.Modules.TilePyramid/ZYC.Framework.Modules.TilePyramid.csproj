@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <Enable_Target_CopyDebugJsonToSettingsOutput>true</Enable_Target_CopyDebugJsonToSettingsOutput>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\ZYC.Framework.Modules.TilePyramid.Abstractions\ZYC.Framework.Modules.TilePyramid.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Local_ZYC_TilePyramid_Core)' != 'true'">
+    <PackageReference Include="ZYC.TilePyramid.Wpf" />
+    <PackageReference Include="ZYC.TilePyramid.Annotations.Wpf" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Local_ZYC_TilePyramid_Core)' == 'true'">
+    <ProjectReference Include="..\ZYC.TilePyramid.Core\ZYC.TilePyramid.Wpf\ZYC.TilePyramid.Wpf.csproj" />
+    <ProjectReference Include="..\ZYC.TilePyramid.Core\ZYC.TilePyramid.Annotations.Wpf\ZYC.TilePyramid.Annotations.Wpf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ZYC.Framework.Core">
+      <HintPath>$(OutputPath)ZYC.Framework.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ZYC.Framework.Abstractions">
+      <HintPath>$(OutputPath)ZYC.Framework.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="ModelContextProtocol.Core">
+      <HintPath>$(OutputPath)ModelContextProtocol.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Emoji.Wpf" />
+    <PackageReference Include="System.Reactive" />
+    <PackageReference Include="ZYC.CoreToolkit.Extensions.Autofac" />
+    <PackageReference Include="MahApps.Metro.IconPacks.Material" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="TilePyramid.TilePyramidLanguageResourcesConfig.json">
+      <Pack>true</Pack>
+      <PackagePath>contentFiles\any\any;content</PackagePath>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
+  </ItemGroup>
+
+</Project>

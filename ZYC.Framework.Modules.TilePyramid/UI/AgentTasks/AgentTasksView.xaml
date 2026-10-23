@@ -1,0 +1,221 @@
+﻿<UserControl x:Class="ZYC.Framework.Modules.TilePyramid.UI.AgentTasks.AgentTasksView"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:zyc="https://github.com/ZiYuCai1984"
+             xmlns:local="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI.AgentTasks"
+             xmlns:agent="clr-namespace:ZYC.Framework.Modules.TilePyramid.Abstractions.Agent;assembly=ZYC.Framework.Modules.TilePyramid.Abstractions"
+             Loaded="OnLoaded"
+             Unloaded="OnUnloaded"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZYC.Framework.Modules.TilePyramid;component/Resources/Styles/Common.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="VisibleWhenTrue" />
+            <Style x:Key="SecondaryText" TargetType="TextBlock">
+                <Setter Property="Opacity" Value="0.7" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="StateBadge" TargetType="Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Gray7}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="2" />
+                <Setter Property="Padding" Value="6 2" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="ControlStateBadge" TargetType="Border" BasedOn="{StaticResource StateBadge}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Snapshot.ControlState}"
+                                 Value="{x:Static agent:TilePyramidAgentControlState.Requested}">
+                        <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.AccentBase}" />
+                        <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Accent4}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Snapshot.ControlState}"
+                                 Value="{x:Static agent:TilePyramidAgentControlState.Agent}">
+                        <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.AccentBase}" />
+                        <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Accent4}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ExecutionStateText" TargetType="TextBlock">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Snapshot.State}"
+                                 Value="{x:Static agent:TilePyramidAgentTaskState.Failed}">
+                        <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Control.Validation}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Snapshot.State}"
+                                 Value="{x:Static agent:TilePyramidAgentTaskState.Interrupted}">
+                        <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Control.Validation}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <DataTemplate x:Key="TaskTemplate">
+                <Border BorderBrush="{DynamicResource MahApps.Brushes.Gray7}"
+                        BorderThickness="0 0 0 1" 
+                        Padding="0 6 0 8">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Snapshot.DocumentTitle}" 
+                                   TextTrimming="CharacterEllipsis"
+                                   Margin="0 0 0 4">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryText}">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding IsDocumentScoped, RelativeSource={RelativeSource AncestorType={x:Type local:AgentTasksView}}}"
+                                            Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Snapshot.Title}" 
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis" 
+                                       VerticalAlignment="Center" 
+                                       Margin="0 0 8 0" />
+                            <WrapPanel Grid.Column="1" 
+                                       VerticalAlignment="Center">
+                                <Border Style="{StaticResource StateBadge}">
+                                    <TextBlock Text="{Binding ExecutionStateText}"
+                                               Style="{StaticResource ExecutionStateText}" />
+                                </Border>
+                                <Border Style="{StaticResource ControlStateBadge}" Margin="6 0 0 0"
+                                        Visibility="{Binding ShowControlState, Converter={StaticResource VisibleWhenTrue}}">
+                                    <TextBlock Text="{Binding ControlStateText}" />
+                                </Border>
+                            </WrapPanel>
+                        </Grid>
+                        <TextBlock Text="{Binding ActivityText}" 
+                                   TextTrimming="CharacterEllipsis" 
+                                   Margin="0 6 0 0" />
+                        <WrapPanel Margin="0 4 0 4">
+                            <TextBlock Text="{Binding ProgressText}" 
+                                       Style="{StaticResource SecondaryText}"
+                                       Margin="0 0 12 0" />
+                            <TextBlock Text="{Binding ResultsText}" 
+                                       Style="{StaticResource SecondaryText}" />
+                        </WrapPanel>
+                        <TextBlock Text="{zyc:L 'The target tab is closed. Reopen the image to review saved results.'}"
+                                   TextWrapping="Wrap" 
+                                   Margin="0 0 0 4">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryText}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Snapshot.IsDocumentAvailable}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <!-- Every presentation uses the same explicit control and task actions. -->
+
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right">
+                            <zyc:IconButton
+                                Margin="0 0 8 0"
+                                Text="{Binding GrantText}"
+                                Kind="Check"
+                                Tag="{Binding Id}"
+                                Click="GrantControl_OnClick"
+                                BorderBrush="{DynamicResource MahApps.Brushes.AccentBase}"
+                                Visibility="{Binding CanGrantControl, Converter={StaticResource VisibleWhenTrue}}" />
+                            <zyc:IconButton Margin="0 0 8 0"
+                                            Kind="CircleOffOutline"
+                                            Text="{Binding ReclaimText}"
+                                            Tag="{Binding Id}"
+                                            Click="ReclaimControl_OnClick"
+                                            BorderBrush="{DynamicResource MahApps.Brushes.AccentBase}"
+                                            Visibility="{Binding CanReclaimControl, Converter={StaticResource VisibleWhenTrue}}" />
+                            <zyc:IconButton Margin="0 0 8 0"
+                                            Text="{zyc:L 'View Results'}"
+                                            Kind="ClipboardClockOutline"
+                                            Tag="{Binding Id}"
+                                            Click="Results_OnClick"
+                                            IsEnabled="{Binding Snapshot.IsDocumentAvailable}" />
+                            <zyc:IconButton Margin="0 0 8 0"
+                                            Text="{zyc:L 'Stop Task'}"
+                                            Kind="Close"
+                                            Tag="{Binding Id}"
+                                            Click="Stop_OnClick"
+                                            Visibility="{Binding CanStop, Converter={StaticResource VisibleWhenTrue}}" />
+                            <zyc:IconButton
+                                Text="{Binding IsDetailsExpanded,Converter={zyc:BoolToStringConverter TrueValue={zyc:L 'Details ▴'},FalseValue={zyc:L 'Details ▾'}}}"
+                                Kind="InformationOutline"
+                                Tag="{Binding .}"
+                                Click="Details_OnClick">
+                            </zyc:IconButton>
+                        </StackPanel>
+
+                        <WrapPanel />
+                        <Border Margin="0 8 0 0"
+                                Padding="8 0 0 0"
+                                BorderThickness="2 0 0 0"
+                                BorderBrush="{DynamicResource MahApps.Brushes.Gray7}"
+                                Visibility="{Binding IsDetailsExpanded, Converter={StaticResource VisibleWhenTrue}}">
+                            <StackPanel>
+                                <StackPanel.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                        <Setter Property="Margin" Value="0 2" />
+                                    </Style>
+                                </StackPanel.Resources>
+                                <TextBlock Text="{Binding Snapshot.Title, StringFormat={zyc:L 'Task: {0}'}}" />
+                                <TextBlock Text="{Binding ActivityText}" />
+                                <TextBlock Text="{Binding ScopeText}" />
+                                <TextBlock Text="{Binding Snapshot.Model, StringFormat={zyc:L 'Model: {0}'}}" />
+                                <TextBlock Text="{Binding ReviewPolicyText}" />
+                                <!--//TODO-zyc Consider moving TimingText outside.--> 
+                                <TextBlock Text="{Binding TimingText}" Opacity="0.7" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border Background="{StaticResource ToolbarBackground}"
+            Padding="16 8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <!--<TextBlock Text="{Binding Summary}"
+                       Style="{StaticResource SecondaryText}"
+                       Margin="0 2 0 6" />-->
+            <StackPanel Grid.Row="1"
+                        Margin="8 16">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasTasks}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <zyc:NoItemView Text="{zyc:L 'No tasks'}" />
+            </StackPanel>
+            <ScrollViewer Grid.Row="1"
+                          MaxHeight="360"
+                          VerticalScrollBarVisibility="Visible"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Visibility="{Binding HasTasks, Converter={StaticResource VisibleWhenTrue}}">
+                <ItemsControl ItemsSource="{Binding Items}"
+                              ItemTemplate="{StaticResource TaskTemplate}" 
+                              Padding="0 0 8 0"/>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

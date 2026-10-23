@@ -1,0 +1,22 @@
+﻿name: Publish NuGet Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Push to NuGet.org
+    runs-on: windows-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Build and Publish
+        run: |
+          dotnet run --project ZYC.TilePyramid.Build.NuGet/ZYC.TilePyramid.Build.NuGet.csproj -c Release --property:DefineConstants="PUBLISH_NUGET_ORG"

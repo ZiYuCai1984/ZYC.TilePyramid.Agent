@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <EnableFody>true</EnableFody>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Local_ZYC_TilePyramid_Core)' != 'true'">
+    <PackageReference Include="ZYC.TilePyramid.Core" />
+    <PackageReference Include="ZYC.TilePyramid.Annotations" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Local_ZYC_TilePyramid_Core)' == 'true'">
+    <ProjectReference Include="..\ZYC.TilePyramid.Core\ZYC.TilePyramid.Core\ZYC.TilePyramid.Core.csproj" />
+    <ProjectReference Include="..\ZYC.TilePyramid.Core\ZYC.TilePyramid.Annotations\ZYC.TilePyramid.Annotations.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ZYC.Framework.Abstractions">
+      <HintPath>$(OutputPath)ZYC.Framework.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="ZYC.Framework.Modules.Language.Abstractions">
+      <HintPath>$(OutputPath)ZYC.Framework.Modules.Language.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="ZYC.Framework.Modules.Translator.Abstractions">
+      <HintPath>$(OutputPath)ZYC.Framework.Modules.Translator.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ZYC.CoreToolkit.Abstractions" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,216 @@
+﻿<UserControl x:Class="ZYC.Framework.Modules.TilePyramid.UI.Debug.DebugPanelView"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:zyc="https://github.com/ZiYuCai1984"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI"
+             Background="White"
+             Loaded="OnLoaded"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=ui:TilePyramidDocumentView}">
+    <UserControl.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Padding" Value="6,3" />
+            <EventSetter Event="Click" Handler="OnAction" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="MinWidth" Value="40" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="Expander">
+            <Setter Property="Margin" Value="0,4" />
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Margin" Value="2,4" />
+        </Style>
+    </UserControl.Resources>
+    <Grid DataContext="{Binding AgentDebug}" Margin="6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock Text="{zyc:L 'Local Agent Debugging · Real task APIs with placeholder candidates'}" TextWrapping="Wrap" />
+            <ComboBox ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}"
+                      IsSynchronizedWithCurrentItem="False" Margin="2,4">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock TextWrapping="Wrap">
+                            <Run Text="{Binding Snapshot.Title,Mode=OneWay}" /><Run Text=" · " />
+                            <Run Text="{Binding Snapshot.State,Mode=OneWay}" /><Run Text=" · " />
+                            <Run Text="{Binding Id,Mode=OneWay}" />
+                        </TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Text="{Binding LeaseText}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding SelectedTask.StatusText}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding SelectedTask.ActivityText}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding SelectedTask.ProgressText}" />
+            <TextBlock Text="{Binding SelectedTask.ResultsText}" />
+            <TextBlock Text="{Binding SelectedTask.ReviewPolicyText}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding SimulationStatus}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Activity}" TextWrapping="Wrap" />
+            <WrapPanel>
+                <Button Content="{zyc:L 'Stop Selected Task'}" Tag="Stop" />
+                <Button Content="{zyc:L 'Reclaim Control'}" Tag="ReclaimControl" />
+                <Button Content="{zyc:L 'Refresh'}" Tag="Refresh" />
+            </WrapPanel>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <Expander Header="{zyc:L 'Create Task / Automatic Execution'}" IsExpanded="True">
+                    <StackPanel>
+                        <TextBlock Text="{zyc:L 'The scope, focal plane and layer below apply only to new tasks. Existing task scopes are fixed.'}" TextWrapping="Wrap" />
+                        <TextBlock Text="{zyc:L 'Task Title / Model ID'}" />
+                        <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Text="{Binding Model, UpdateSourceTrigger=PropertyChanged}" />
+                        <WrapPanel>
+                            <Button Content="{zyc:L 'Use Current Viewport'}" Tag="VisibleRegion" />
+                            <Button Content="{zyc:L 'Use Whole Image'}" Tag="WholeImage" />
+                        </WrapPanel>
+                        <UniformGrid Columns="4">
+                            <StackPanel><TextBlock Text="X" /><TextBox Text="{Binding RegionX, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                            <StackPanel><TextBlock Text="Y" /><TextBox Text="{Binding RegionY, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                            <StackPanel><TextBlock Text="{zyc:L 'Width'}" /><TextBox Text="{Binding RegionWidth, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                            <StackPanel><TextBlock Text="{zyc:L 'Height'}" /><TextBox Text="{Binding RegionHeight, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                        </UniformGrid>
+                        <TextBlock Text="{zyc:L 'Focal Plane (1-based) / Target Layer'}" />
+                        <TextBox Text="{Binding FocalPlane, UpdateSourceTrigger=PropertyChanged}" />
+                        <ComboBox ItemsSource="{Binding Layers}" SelectedItem="{Binding SelectedLayer}"
+                                  IsSynchronizedWithCurrentItem="False" Margin="2">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock><Run Text="{Binding Name}" /><Run Text=" · " /><Run Text="{zyc:L 'Locked'}" /><Run Text="=" /><Run Text="{Binding IsLocked}" /></TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="{zyc:L 'New Layer'}" Tag="CreateLayer" />
+                            <TextBox Text="{Binding LayerName, UpdateSourceTrigger=PropertyChanged}" />
+                        </DockPanel>
+                        <Button Content="{zyc:L 'Create Task Only (Continue Manually)'}" Tag="Create" HorizontalAlignment="Left" />
+                        <UniformGrid Columns="2">
+                            <StackPanel><TextBlock Text="{zyc:L 'Simulated Region Count'}" /><TextBox Text="{Binding SimulationRegions, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                            <StackPanel><TextBlock Text="{zyc:L 'Wait per Region (ms)'}" /><TextBox Text="{Binding SimulationDelay, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                        </UniformGrid>
+                        <CheckBox Content="{zyc:L 'Automatic heartbeat (every 15 seconds, only for tasks created here)'}" IsChecked="{Binding AutomaticHeartbeat}" />
+                        <CheckBox Content="{zyc:L 'Automatically acknowledge cancellation after the local executor stops'}" IsChecked="{Binding AutomaticAcknowledgement}" />
+                        <CheckBox Content="{zyc:L 'Follow regions during simulation (requires viewport control)'}" IsChecked="{Binding MoveViewportDuringSimulation}" />
+                        <WrapPanel>
+                            <Button Content="{zyc:L 'Create and Run Automatically'}" Tag="Simulate" />
+                            <Button Content="{zyc:L 'Stop Simulation'}" Tag="StopSimulation" />
+                        </WrapPanel>
+                        <TextBlock Text="{zyc:L 'Automatic execution: divide scope → read images → submit placeholders → report progress → complete. Hiding the panel does not stop tasks.'}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Expander>
+                <Expander Header="{zyc:L 'Viewport Control'}" IsExpanded="True">
+                    <StackPanel>
+                        <WrapPanel>
+                            <Button Content="{zyc:L 'Request Agent Control'}" Tag="RequestControl" />
+                            <Button Content="{zyc:L 'Grant Control'}" Tag="GrantControl" />
+                            <Button Content="{zyc:L 'Release Agent Control'}" Tag="ReleaseControl" />
+                        </WrapPanel>
+                        <TextBlock Text="{zyc:L 'Use the buttons to grant or reclaim control. Panning, zooming and changing focal planes do not change authorization. Recognition can continue in the background after control is reclaimed.'}" TextWrapping="Wrap" />
+                        <UniformGrid Columns="4">
+                            <StackPanel><TextBlock Text="{zyc:L 'Center X'}" /><TextBox Text="{Binding CenterX, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                            <StackPanel><TextBlock Text="{zyc:L 'Center Y'}" /><TextBox Text="{Binding CenterY, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                            <StackPanel><TextBlock Text="{zyc:L 'Zoom'}" /><TextBox Text="{Binding Scale, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                            <StackPanel><TextBlock Text="{zyc:L 'Rotation °'}" /><TextBox Text="{Binding Rotation, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                        </UniformGrid>
+                        <WrapPanel>
+                            <Button Content="{zyc:L 'Read Current Viewport'}" Tag="GetViewport" />
+                            <Button Content="{zyc:L 'Set Viewport for Selected Task'}" Tag="SetViewport" />
+                        </WrapPanel>
+                        <TextBox Text="{Binding ViewportJson, Mode=OneWay}" IsReadOnly="True" MaxHeight="180"
+                                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
+                    </StackPanel>
+                </Expander>
+                <Expander Header="{zyc:L 'Read Regions / Submit Candidates Manually'}">
+                    <StackPanel>
+                        <Button Content="{zyc:L 'Read Selected Task Region'}" Tag="ReadRegion" HorizontalAlignment="Left" />
+                        <Image Source="{Binding RegionImage}" Height="160" Stretch="Uniform" />
+                        <TextBlock Text="{Binding CropText}" TextWrapping="Wrap" />
+                        <TextBlock Text="{zyc:L 'Candidate ID (resubmit the same ID to update; also used for review actions below)'}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding CandidateId, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Content="{zyc:L 'Generate New Candidate ID'}" Tag="NewCandidate" HorizontalAlignment="Left" />
+                        <TextBlock Text="{zyc:L 'Candidate Label / Score / Shape'}" />
+                        <TextBox Text="{Binding CandidateLabel, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Text="{Binding CandidateScore, UpdateSourceTrigger=PropertyChanged}" />
+                        <ComboBox ItemsSource="{Binding ShapeKinds}" SelectedItem="{Binding CandidateShape}" Margin="2" />
+                        <TextBlock Text="{zyc:L 'Placeholder geometry is inside the latest crop, or the task scope if no crop exists. Submission stays available after the task ends so you can inspect rejection of late data.'}" TextWrapping="Wrap" />
+                        <Button Content="{zyc:L 'Submit / Update Candidate'}" Tag="Submit" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </Expander>
+                <Expander Header="{zyc:L 'Progress / Heartbeat / Finish Task'}" IsExpanded="True">
+                    <StackPanel>
+                        <TextBlock Text="{zyc:L 'Stage Description'}" />
+                        <TextBox Text="{Binding Stage, UpdateSourceTrigger=PropertyChanged}" />
+                        <UniformGrid Columns="2">
+                            <StackPanel><TextBlock Text="{zyc:L 'Completed count'}" /><TextBox Text="{Binding CompletedRegions, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                            <StackPanel><TextBlock Text="{zyc:L 'Total Count (Leave Blank to Keep Current Value)'}" /><TextBox Text="{Binding TotalRegions, UpdateSourceTrigger=PropertyChanged}" /></StackPanel>
+                        </UniformGrid>
+                        <WrapPanel>
+                            <Button Content="{zyc:L 'Report Progress'}" Tag="ReportProgress" />
+                            <Button Content="{zyc:L 'Send Heartbeat Only'}" Tag="Heartbeat" />
+                            <Button Content="{zyc:L 'Complete Successfully'}" Tag="Complete" />
+                            <Button Content="{zyc:L 'Acknowledge Cancellation'}" Tag="Acknowledge" />
+                        </WrapPanel>
+                        <TextBlock Text="{zyc:L 'Tasks remain in the stopping state by default. Acknowledge cancellation manually or enable automatic acknowledgement to finish.'}" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding FailureMessage, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Content="{zyc:L 'Report Task Failure'}" Tag="Fail" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </Expander>
+                <Expander Header="{zyc:L 'Query / Review Results'}">
+                    <StackPanel>
+                        <WrapPanel>
+                            <Button Content="{zyc:L 'Query All Results'}" Tag="GetResults" />
+                            <Button Content="{zyc:L 'Open Results Panel'}" Tag="ShowResults" />
+                        </WrapPanel>
+                        <ComboBox ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedResult}"
+                                  IsSynchronizedWithCurrentItem="False" Margin="2">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock TextWrapping="Wrap">
+                                        <Run Text="{Binding Label,Mode=OneWay}" />
+                                        <Run Text=" · " />
+                                        <Run Text="{Binding Decision,Mode=OneWay}" />
+                                        <Run Text=" · " />
+                                        <Run Text="{Binding Id,Mode=OneWay}" />
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock Text="{zyc:L 'Selecting a result fills in its candidate ID for the actions below. Accepting creates a real annotation. Submissions follow the automatic acceptance policy fixed at task start.'}" TextWrapping="Wrap" />
+                        <WrapPanel>
+                            <Button Content="{zyc:L 'Accept'}" Tag="Accept" />
+                            <Button Content="{zyc:L 'Reject'}" Tag="Reject" />
+                            <Button Content="{zyc:L 'Reset to Pending Review'}" Tag="ResetReview" />
+                            <Button Content="{zyc:L 'Recreate Linked Annotation'}" Tag="CreateAnnotation" />
+                        </WrapPanel>
+                        <TextBox Text="{Binding ResultJson, Mode=OneWay}" IsReadOnly="True" Height="180"
+                                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
+                    </StackPanel>
+                </Expander>
+                <Expander Header="{zyc:L 'Full Snapshot of Selected Task'}">
+                    <TextBox Text="{Binding TaskJson, Mode=OneWay}" IsReadOnly="True" Height="260"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+        <Expander Grid.Row="2" Header="{zyc:L 'Call Log (Last 200 Entries)'}" IsExpanded="True">
+            <DockPanel>
+                <Button DockPanel.Dock="Top" Content="{zyc:L 'Clear Log'}" Tag="ClearLog" HorizontalAlignment="Right" />
+                <TextBox Text="{Binding Log, Mode=OneWay}" IsReadOnly="True" Height="120"
+                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+            </DockPanel>
+        </Expander>
+    </Grid>
+</UserControl>

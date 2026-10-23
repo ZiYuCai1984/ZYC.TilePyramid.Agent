@@ -1,0 +1,69 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <Local_ZYC_TilePyramid_Core Condition="Exists('$(MSBuildThisFileDirectory)ZYC.TilePyramid.Core\.gitignore')">true</Local_ZYC_TilePyramid_Core>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Abstractions'))">
+    <TargetFramework>net10.0</TargetFramework>
+    <UseWPF>false</UseWPF>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(MSBuildThisFileDirectory)_bin/app/</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <Enable_Target_CopyJsonToSettingsOutput>false</Enable_Target_CopyJsonToSettingsOutput>
+    <Enable_Target_CopyDebugJsonToSettingsOutput>false</Enable_Target_CopyDebugJsonToSettingsOutput>
+    <SettingsOutputDir>$([System.IO.Path]::GetFullPath('$(OutputPath)..\settings\'))</SettingsOutputDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <JsonFiles Include="*.json" />
+  </ItemGroup>
+
+  <!-- ReSharper disable UnknownItemGroup -->
+
+  <Target Name="CopyJsonToSettingsOutput"
+          AfterTargets="Build"
+          Condition="'$(Enable_Target_CopyJsonToSettingsOutput)' == 'true'">
+    <Copy SourceFiles="@(JsonFiles)"
+          DestinationFiles="@(JsonFiles->'$(SettingsOutputDir)\%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CopyDebugJsonToSettingsOutput"
+          AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Debug' and '$(Enable_Target_CopyDebugJsonToSettingsOutput)' == 'true'">
+    <Copy SourceFiles="@(JsonFiles)"
+          DestinationFiles="@(JsonFiles->'$(SettingsOutputDir)\%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <PropertyGroup>
+    <EnableFody Condition="'$(EnableFody)' == ''">false</EnableFody>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(EnableFody)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)FodyWeavers.xml"
+          Link="FodyWeavers.xml" />
+
+    <PackageReference Include="PropertyChanged.Fody" />
+  </ItemGroup>
+
+</Project>

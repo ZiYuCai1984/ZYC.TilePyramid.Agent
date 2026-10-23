@@ -1,0 +1,6 @@
+﻿[*]
+charset = utf-8-bom
+
+[*.{csproj,vbproj,fsproj,targets,props,xml}]
+indent_style = space
+indent_size = 2

@@ -1,0 +1,184 @@
+﻿<core:DialogWindowBase x:Class="ZYC.Framework.Modules.TilePyramid.UI.Annotations.AnnotationPropertiesDialog"
+                       x:ClassModifier="internal"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                       xmlns:core="clr-namespace:ZYC.Framework.Core;assembly=ZYC.Framework.Core"
+                       xmlns:zyc="https://github.com/ZiYuCai1984"
+                       xmlns:converters="clr-namespace:ZYC.Framework.Modules.TilePyramid.Converters"
+                       xmlns:bindings="clr-namespace:ZYC.Framework.Core.Bindings;assembly=ZYC.Framework.Core"
+                       xmlns:wpf="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
+                       xmlns:annotations="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI.Annotations"
+                       Width="380"
+                       SizeToContent="Height"
+                       ResizeMode="NoResize"
+                       ShowInTaskbar="False"
+                       Title="{zyc:LBinding AnnotationTitle}"
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <core:DialogWindowBase.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZYC.Framework.Modules.TilePyramid;component/Resources/Styles/Common.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <bindings:BindingProxy x:Key="DialogContext" Data="{Binding}" />
+
+            <Style TargetType="{x:Type zyc:HybridIcon}"
+                   BasedOn="{StaticResource HybridIcon16Style}" />
+        </ResourceDictionary>
+    </core:DialogWindowBase.Resources>
+    <!-- ReSharper disable MarkupAttributeTypo -->
+    <StackPanel Margin="16 0">
+        <TextBlock Text="{zyc:L Name}"
+                   Margin="0 8 0 0" />
+        <!--!WARNING Emoji.Wpf.TextBox's internal binding still uses LostFocus despite PropertyChanged here.
+            OnPreviewKeyDown explicitly updates it before confirming Enter in single-line Emoji inputs. -->
+        <wpf:TextBox x:Name="LabelInput"
+                     Text="{Binding Draft.Label, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0 8 0 0" />
+
+        <TextBlock Text="{zyc:L Layer}"
+                   Margin="0 8 0 0" />
+        <ComboBox x:Name="LayerInput"
+                  ItemsSource="{Binding LayerOptions}"
+                  SelectedItem="{Binding SelectedLayer, Mode=TwoWay}"
+                  DisplayMemberPath="DisplayName"
+                  IsSynchronizedWithCurrentItem="False"
+                  Margin="0 8 0 0">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="IsEnabled" Value="{Binding IsSelectable}" />
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
+
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="{zyc:L Color}"
+                           Margin="0,8,8,0" />
+
+                <Grid Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox x:Name="ColorInput"
+                             Text="{Binding ColorText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,0,8,0" />
+
+                    <ComboBox Grid.Column="1"
+                              Width="56"
+                              Margin="0 0 8 0"
+                              ItemsSource="{Binding TilePyramidConfig.PredefinedColors}"
+                              SelectedItem="{Binding SelectedPredefinedColor, Mode=TwoWay}"
+                              IsSynchronizedWithCurrentItem="False"
+                              HorizontalAlignment="Center"
+                              BorderBrush="{StaticResource MahApps.Brushes.Gray5}">
+                        <ComboBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="2"
+                                             Columns="8" />
+                            </ItemsPanelTemplate>
+                        </ComboBox.ItemsPanel>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Background="{Binding .,Converter={converters:StringToSolidColorBrushConverter}}"
+                                    Width="16"
+                                    Height="16" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+
+                <TextBlock Text="{zyc:L Icon}"
+                           Margin="0,8,8,0" />
+
+                <Grid Margin="0 8 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <wpf:TextBox x:Name="IconInput"
+                                 Text="{Binding Draft.Icon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0 0 8 0" />
+
+                    <ComboBox Grid.Column="1"
+                              Width="56"
+                              Margin="0 0 8 0"
+                              ItemsSource="{Binding TilePyramidConfig.PredefinedIcons}"
+                              SelectedItem="{Binding SelectedPredefinedIcon, Mode=TwoWay}"
+                              IsSynchronizedWithCurrentItem="False"
+                              HorizontalAlignment="Center"
+                              BorderBrush="{StaticResource MahApps.Brushes.Gray5}">
+                        <ComboBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="2"
+                                             Columns="8" />
+                            </ItemsPanelTemplate>
+                        </ComboBox.ItemsPanel>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <zyc:HybridIcon Icon="{Binding .}"
+                                                Foreground="{Binding Data.PreviewBrush, Source={StaticResource DialogContext}}"
+                                                Width="16"
+                                                Height="16" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+
+            </StackPanel>
+
+
+            <Border Grid.Column="1"
+                    VerticalAlignment="Bottom">
+                <annotations:AnnotationThumbnailView Height="108"
+                                                     Width="108"
+                                                     AspectRatio="1"
+                                                     Shape="{Binding Draft.Shape}"
+                                                     Stroke="{Binding Draft.StrokeArgb, Converter={converters:AnnotationColorConverter}}"
+                                                     FocalPlaneIndex="{Binding PreviewFocalPlaneIndex}"
+                                                     Source="{Binding PreviewSource}" />
+            </Border>
+
+
+        </Grid>
+
+        <TextBlock Text="{zyc:L Notes}"
+                   Margin="0,8,0,0" />
+        <TextBox Text="{Binding Draft.Comments, UpdateSourceTrigger=PropertyChanged}"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 Height="90"
+                 VerticalScrollBarVisibility="Auto"
+                 Margin="0,8,0,0" />
+
+        <TextBlock Foreground="{StaticResource MahApps.Brushes.Control.Validation}"
+                   TextWrapping="Wrap"
+                   Margin="0,8,0,0"
+                   Text="{zyc:LBinding ValidationMessage}" />
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,8,0,16">
+
+            <zyc:IconButton IsDefault="True"
+                            IsEnabled="{Binding CanConfirm}"
+                            MinWidth="80"
+                            Kind="Check"
+                            Text="{zyc:LBinding ConfirmText}"
+                            Margin="0,0,8,0"
+                            Click="Confirm_OnClick" />
+            <zyc:IconButton Text="{zyc:LBinding CancelText}"
+                            Kind="Close"
+                            MinWidth="80"
+                            Click="Cancel_OnClick" />
+        </StackPanel>
+    </StackPanel>
+</core:DialogWindowBase>

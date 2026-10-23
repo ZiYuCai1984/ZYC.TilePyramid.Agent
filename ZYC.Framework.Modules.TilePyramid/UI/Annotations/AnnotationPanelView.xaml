@@ -1,0 +1,427 @@
+﻿<UserControl x:Class="ZYC.Framework.Modules.TilePyramid.UI.Annotations.AnnotationPanelView"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:zyc="https://github.com/ZiYuCai1984"
+             xmlns:annotations="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI.Annotations"
+             xmlns:converters="clr-namespace:ZYC.Framework.Modules.TilePyramid.Converters"
+             xmlns:bindings="clr-namespace:ZYC.Framework.Core.Bindings;assembly=ZYC.Framework.Core"
+             xmlns:ui="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI"
+             xmlns:wpf="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d"
+             Background="White"
+             Padding="8"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=ui:TilePyramidDocumentView}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZYC.Framework.Modules.TilePyramid;component/Resources/Styles/Common.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <bindings:BindingProxy x:Key="PanelContext"
+                                   Data="{Binding}" />
+
+            <Style TargetType="iconPacks:PackIconMaterial"
+                   BasedOn="{StaticResource PackIconMaterial16Style}" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+
+        <StackPanel Margin="8 0 0 0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center">
+
+                    <iconPacks:PackIconMaterial Kind="LayersOutline"
+                                                Margin="0 0 8 0" />
+
+                    <ComboBox ItemsSource="{Binding AnnotationLayers}"
+                              SelectedItem="{Binding SelectedAnnotationLayer, Mode=TwoWay}"
+                              DisplayMemberPath="DisplayName"
+                              IsSynchronizedWithCurrentItem="False"
+                              Width="248"
+                              ToolTip="{zyc:LBinding AnnotationLayerHint}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                    <zyc:IconButton HorizontalAlignment="Right"
+                                    Kind="Plus"
+                                    Text="{zyc:L New Layer}"
+                                    Command="{Binding NewAnnotationLayerDialogCommand}"
+                                    IsEnabled="{Binding CanStartAnnotationEdit}" />
+                </StackPanel>
+            </Grid>
+
+
+            <Separator Margin="0 4 0 0" />
+
+        </StackPanel>
+
+
+        <!-- Virtualized pixel scrolling keeps the bottom of groups taller than the viewport reachable. -->
+        <ListView
+            Grid.Row="1"
+            x:Name="AnnotationList"
+            ItemsSource="{Binding AnnotationListView}"
+            ui:ListItemNavigation.Request="{Binding AnnotationNavigationRequest}"
+            Padding="0"
+            ScrollViewer.CanContentScroll="True"
+            VirtualizingPanel.IsVirtualizing="True"
+            VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+            VirtualizingPanel.ScrollUnit="Pixel"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+            <ListView.GroupStyle>
+                <GroupStyle HidesIfEmpty="False">
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid x:Name="LayerHeader"
+                                  Margin="0 8 8 8"
+                                  d:DataContext="{d:DesignInstance annotations:AnnotationLayerItem}">
+                                <Grid.DataContext>
+                                    <MultiBinding
+                                        Converter="{converters:AnnotationLayerItemDataContextConverter}">
+                                        <!--!WARNING CollectionViewGroup.Name contains the LayerId grouping key.
+                                                Child bindings use AnnotationLayerItem after this DataContext conversion. -->
+                                        <Binding Path="Name" />
+                                        <Binding Path="AnnotationLayers"
+                                                 RelativeSource="{RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}" />
+                                    </MultiBinding>
+                                </Grid.DataContext>
+                                <Grid.Resources>
+                                    <ResourceDictionary>
+                                        <Style TargetType="{x:Type zyc:HybridIcon}"
+                                               BasedOn="{StaticResource HybridIcon16Style}" />
+                                    </ResourceDictionary>
+                                </Grid.Resources>
+
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border x:Name="CurrentLayerIndicator"
+                                        Width="3"
+                                        Margin="0 4 6 4"
+                                        Background="{DynamicResource MahApps.Brushes.AccentBase}"
+                                        Visibility="Hidden" />
+
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <Button
+                                        Command="{Binding SetAnnotationLayerVisibleStateCommand,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}"
+                                        CommandParameter="{Binding .}">
+                                        <iconPacks:PackIconMaterial>
+                                            <iconPacks:PackIconMaterial.Style>
+                                                <Style TargetType="iconPacks:PackIconMaterial"
+                                                       BasedOn="{StaticResource {x:Type iconPacks:PackIconMaterial}}">
+                                                    <Setter Property="Kind" Value="EyeOffOutline" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsVisible}" Value="True">
+                                                            <Setter Property="Kind" Value="EyeOutline" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </iconPacks:PackIconMaterial.Style>
+                                        </iconPacks:PackIconMaterial>
+                                    </Button>
+                                    <Button
+                                        Command="{Binding SetAnnotationLayerLockStateCommand,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}"
+                                        CommandParameter="{Binding .}">
+                                        <iconPacks:PackIconMaterial>
+                                            <iconPacks:PackIconMaterial.Style>
+                                                <Style TargetType="iconPacks:PackIconMaterial"
+                                                       BasedOn="{StaticResource {x:Type iconPacks:PackIconMaterial}}">
+                                                    <Setter Property="Kind" Value="LockOpenOutline" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsLocked}" Value="True">
+                                                            <Setter Property="Kind" Value="LockOutline" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </iconPacks:PackIconMaterial.Style>
+                                        </iconPacks:PackIconMaterial>
+                                    </Button>
+                                </StackPanel>
+
+                                <Grid Grid.Column="2"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Center"
+                                      Margin="8 0 8 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <wpf:TextBlock FontWeight="SemiBold"
+                                                   Text="{Binding DisplayName}"
+                                                   VerticalAlignment="Center"
+                                                   TextWrapping="NoWrap"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   ToolTip="{Binding DisplayName}" />
+                                    <TextBlock Grid.Column="1"
+                                               VerticalAlignment="Center"
+                                               FontWeight="SemiBold">
+                                        <Run Text=" (" />
+                                        <Run
+                                            Text="{Binding Content.ItemCount, RelativeSource={RelativeSource AncestorType={x:Type GroupItem}},Mode=OneWay}" />
+                                        <Run Text=")" />
+                                    </TextBlock>
+
+                                    <Border x:Name="CurrentLayerBadge"
+                                            Grid.Column="2"
+                                            Margin="6 0 0 0"
+                                            Padding="6 1"
+                                            CornerRadius="3"
+                                            VerticalAlignment="Center"
+                                            Background="{DynamicResource MahApps.Brushes.Accent4}"
+                                            Visibility="{Binding IsDefault,Converter={zyc:BoolToVisibilityConverter}}">
+                                        <TextBlock Text="{zyc:L Default}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource MahApps.Brushes.AccentBase}" />
+                                    </Border>
+                                </Grid>
+
+
+                                <StackPanel Orientation="Horizontal"
+                                            Grid.Column="3"
+                                            VerticalAlignment="Center">
+                                    <Button
+                                        Command="{Binding SetCurrentAnnotationLayerCommand,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}"
+                                        CommandParameter="{Binding .}">
+                                        <iconPacks:PackIconMaterial Kind="ImageFilterCenterFocus" />
+                                    </Button>
+                                    <Button
+                                        Command="{Binding MoveUpAnnotationLayerCommand,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}"
+                                        CommandParameter="{Binding .}">
+                                        <iconPacks:PackIconMaterial Kind="ArrowUp" />
+                                    </Button>
+                                    <Button
+                                        Command="{Binding MoveDownAnnotationLayerCommand,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}"
+                                        CommandParameter="{Binding .}">
+                                        <iconPacks:PackIconMaterial Kind="ArrowDown" />
+                                    </Button>
+                                    <Button
+                                        Command="{Binding EditAnnotationLayerCommand,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}"
+                                        CommandParameter="{Binding .}">
+                                        <iconPacks:PackIconMaterial Kind="FolderEditOutline" />
+                                    </Button>
+                                    <Button
+                                        Command="{Binding DeleteAnnotationLayerCommand,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}"
+                                        CommandParameter="{Binding .}">
+                                        <iconPacks:PackIconMaterial Kind="DeleteOutline" />
+                                    </Button>
+                                </StackPanel>
+
+                            </Grid>
+
+                            <DataTemplate.Triggers>
+                                <DataTrigger Value="True">
+                                    <DataTrigger.Binding>
+                                        <MultiBinding Converter="{converters:AnnotationLayerSelectedConverter}">
+                                            <Binding Path="DataContext.Id" ElementName="LayerHeader" />
+                                            <Binding Path="SelectedAnnotationLayer.Id"
+                                                     RelativeSource="{RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}" />
+                                        </MultiBinding>
+                                    </DataTrigger.Binding>
+                                    <Setter TargetName="CurrentLayerIndicator" Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <StackPanel>
+                                            <ContentPresenter Content="{TemplateBinding Content}"
+                                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+                                            <Grid>
+                                                <ItemsPresenter x:Name="Items"
+                                                                Margin="{TemplateBinding Padding}" />
+                                                <TextBlock x:Name="EmptyPlaceholder"
+                                                           Margin="0 8"
+                                                           Text="{zyc:L No items in this group}"
+                                                           Opacity="0.75"
+                                                           HorizontalAlignment="Center"
+                                                           Visibility="Collapsed" />
+                                            </Grid>
+                                        </StackPanel>
+                                        <ControlTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding ItemCount}" Value="0">
+                                                <Setter TargetName="EmptyPlaceholder" Property="Visibility"
+                                                        Value="Visible" />
+                                                <Setter TargetName="Items" Property="Visibility"
+                                                        Value="Collapsed" />
+                                            </DataTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ListView.GroupStyle>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="4" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Height" Value="128" />
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="4 0 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <annotations:AnnotationThumbnailView Height="96"
+                                                             Width="96"
+                                                             VerticalAlignment="Top"
+                                                             Cursor="Hand"
+                                                             MouseLeftButtonDown="AnnotationItem_OnMouseLeftButtonDown"
+                                                             AspectRatio="1"
+                                                             Tag="{Binding DataContext,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}"
+                                                             Shape="{Binding Shape}"
+                                                             Stroke="{Binding StrokeArgb, Converter={converters:AnnotationColorConverter}}"
+                                                             Source="{Binding AnnotationSource, RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}"
+                                                             FocalPlaneIndex="{Binding FocalPlaneIndex,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}" />
+                        <Grid Grid.Column="1"
+                              Margin="8 0 0 0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <Grid VerticalAlignment="Top">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <zyc:HybridIcon Icon="{Binding Icon}"
+                                                Foreground="{Binding StrokeArgb, Converter={converters:AnnotationColorConverter}}"
+                                                Width="16"
+                                                Height="16"
+                                                Margin="0,0,6,0"
+                                                VerticalAlignment="Top" />
+                                <wpf:TextBlock Grid.Column="1"
+                                               FontWeight="SemiBold"
+                                               TextWrapping="NoWrap"
+                                               ToolTip="{Binding Label}"
+                                               TextTrimming="CharacterEllipsis"
+                                               VerticalAlignment="Top">
+                                    <wpf:TextBlock.Style>
+                                        <Style TargetType="wpf:TextBlock">
+                                            <Setter Property="Text" Value="{Binding Label}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Label}" Value="">
+                                                    <Setter Property="Text"
+                                                            Value="{zyc:L (Untitled Annotation)}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </wpf:TextBlock.Style>
+                                </wpf:TextBlock>
+
+
+                                <StackPanel Grid.Column="2"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Top"
+                                            Margin="4 0 0 0">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="iconPacks:PackIconMaterial"
+                                               BasedOn="{StaticResource PackIconMaterial16Style}" />
+                                    </StackPanel.Resources>
+                                    <Button
+                                        Command="{Binding Data.NavigateToRecognitionCommand, Source={StaticResource PanelContext}}"
+                                        CommandParameter="{Binding}"
+                                        BorderThickness="0"
+                                        Background="Transparent">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Source}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <iconPacks:PackIconMaterial Kind="LinkVariant" />
+                                    </Button>
+                                    <Menu Background="Transparent">
+                                        <MenuItem Padding="7 5 8 6"
+                                                  Background="Transparent"
+                                                  VerticalAlignment="Center">
+                                            <MenuItem.Header>
+                                                <iconPacks:PackIconMaterial Kind="SquareEditOutline"
+                                                                            Width="16" Height="16" />
+                                            </MenuItem.Header>
+                                            <MenuItem Header="{zyc:L Edit Geometry}"
+                                                      Command="{Binding Data.EditAnnotationPositionCommand, Source={StaticResource PanelContext}}"
+                                                      CommandParameter="{Binding .}">
+                                                <MenuItem.Icon>
+                                                    <iconPacks:PackIconMaterial Kind="VectorSquareEdit" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="{zyc:L Edit Detail}"
+                                                      Command="{Binding Data.EditAnnotationInformationCommand, Source={StaticResource PanelContext}}"
+                                                      CommandParameter="{Binding .}">
+                                                <MenuItem.Icon>
+                                                    <iconPacks:PackIconMaterial Kind="TextBoxEditOutline" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="{zyc:L Delete}"
+                                                      Command="{Binding Data.DeleteAnnotationCommand, Source={StaticResource PanelContext}}"
+                                                      CommandParameter="{Binding .}">
+                                                <MenuItem.Icon>
+                                                    <iconPacks:PackIconMaterial Kind="DeleteOutline" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </MenuItem>
+                                    </Menu>
+                                </StackPanel>
+
+                            </Grid>
+
+                            <TextBlock Grid.Row="2"
+                                       TextWrapping="Wrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       Text="{Binding Comments}" />
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+
+    </Grid>
+</UserControl>

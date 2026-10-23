@@ -1,0 +1,1 @@
+dotnet run --project ZYC.TilePyramid.Build.NuGet/ZYC.TilePyramid.Build.NuGet.csproj -c Release

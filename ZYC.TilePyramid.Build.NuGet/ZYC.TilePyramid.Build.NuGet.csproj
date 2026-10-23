@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <OutputPath>_bin_build</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <UseWPF>false</UseWPF>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <IgnoreFromPublish>true</IgnoreFromPublish>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="ZYC.CoreToolkit" Version="4.0.5" />
+  </ItemGroup>
+
+
+</Project>

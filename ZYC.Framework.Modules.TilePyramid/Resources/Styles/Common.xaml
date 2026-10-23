@@ -1,0 +1,238 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:zyc="https://github.com/ZiYuCai1984"
+                    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                    xmlns:converters="clr-namespace:ZYC.Framework.Modules.TilePyramid.Converters">
+
+    <SolidColorBrush x:Key="TilePyramidViewBackground" Color="#171B20" />
+    <SolidColorBrush x:Key="ToolbarBackground" Color="White" Opacity="0.85" />
+    <!-- Keep viewport colors aligned with TilePyramidMinimap's default brushes. -->
+    <SolidColorBrush x:Key="MiniMapViewportBrush" Color="#1AFBBF24" />
+    <SolidColorBrush x:Key="MiniMapViewportBorderBrush" Color="#FFFBBF24" />
+    <SolidColorBrush x:Key="EditingAnnotationMaskBackground" Color="#EE171B20" />
+
+    <SolidColorBrush x:Key="FloatingPanelHostHeaderBackground"
+                     Color="{StaticResource MahApps.Colors.SystemChromeMediumLow}" />
+
+    <Style x:Key="HybridIcon16Style"
+           TargetType="{x:Type zyc:HybridIcon}">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style x:Key="PackIconMaterial16Style"
+           TargetType="{x:Type iconPacks:PackIconMaterial}">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+
+    <Style x:Key="MinimapSizeButtonStyle" TargetType="RadioButton">
+        <Setter Property="MinWidth" Value="28" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="Margin" Value="0 0 2 0" />
+        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Command" Value="{Binding SetMinimapSizeCommand}" />
+        <Setter Property="IsChecked">
+            <Setter.Value>
+                <MultiBinding Converter="{converters:MinimapSizeSelectedConverter}"
+                              Mode="OneWay">
+                    <Binding Path="DocumentState.FloatingPanels[Minimap].Width" />
+                    <Binding Path="DocumentState.FloatingPanels[Minimap].Height" />
+                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="2"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Accent4}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Accent4}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.AccentBase}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.AccentBase}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+
+    <Style x:Key="FloatingPanelHostHeaderStyle"
+           TargetType="Grid">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Background" Value="{StaticResource FloatingPanelHostHeaderBackground}" />
+        <!--<Setter Property="Opacity" Value="0.85"/>-->
+    </Style>
+
+    <Style x:Key="FloatingPanelHostStyle"
+           TargetType="Border">
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{StaticResource MahApps.Brushes.Gray7}" />
+    </Style>
+
+
+    <Style x:Key="FloatPositionMenuItemStyle"
+           TargetType="MenuItem">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Text}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="ItemBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter ContentSource="Header"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="ItemBorder" Property="Background"
+                                    Value="{DynamicResource MahApps.Brushes.MenuItem.SelectionFill}" />
+                            <Setter TargetName="ItemBorder" Property="BorderBrush"
+                                    Value="{DynamicResource MahApps.Brushes.MenuItem.SelectionStroke}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource MahApps.Brushes.MenuItem.Foreground.Disabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+
+    <Style x:Key="RecognitionDetailsExpanderStyle" TargetType="Expander">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Expander">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <ToggleButton Width="28"
+                                                  Height="28"
+                                                  VerticalAlignment="Top"
+                                                  Foreground="{TemplateBinding Foreground}"
+                                                  IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="ToggleBorder"
+                                                        Background="Transparent"
+                                                        BorderBrush="Transparent"
+                                                        BorderThickness="1"
+                                                        CornerRadius="2">
+                                            <Path x:Name="Chevron"
+                                                          Data="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"
+                                                          Width="12"
+                                                          Stretch="Uniform"
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"
+                                                          Fill="{TemplateBinding Foreground}"
+                                                          RenderTransformOrigin="0.5,0.5">
+                                                <Path.RenderTransform>
+                                                    <RotateTransform Angle="-90" />
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="Chevron" Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <RotateTransform Angle="0" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ToggleBorder" Property="Background"
+                                                                Value="#10000000" />
+                                            </Trigger>
+                                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                                <Setter TargetName="ToggleBorder" Property="BorderBrush"
+                                                                Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="ToggleBorder" Property="Opacity"
+                                                                Value="0.4" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <!-- Actions are siblings of the toggle, so they never toggle the details. -->
+                            <ContentPresenter Grid.Column="1"
+                                                      ContentSource="Header"
+                                                      VerticalAlignment="Center" />
+                        </Grid>
+                        <Border x:Name="Details"
+                                        Grid.Row="1"
+                                        Visibility="Collapsed"
+                                        Padding="8"
+                                        Margin="0 4 0 0">
+                            <ContentPresenter ContentSource="Content"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Setter TargetName="Details" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

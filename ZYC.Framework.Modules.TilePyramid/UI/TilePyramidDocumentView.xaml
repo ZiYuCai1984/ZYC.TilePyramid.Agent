@@ -1,0 +1,384 @@
+﻿<UserControl x:Class="ZYC.Framework.Modules.TilePyramid.UI.TilePyramidDocumentView"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             xmlns:wpf="clr-namespace:ZYC.TilePyramid.Wpf;assembly=ZYC.TilePyramid.Wpf"
+             xmlns:annotations="clr-namespace:ZYC.TilePyramid.Annotations.Wpf;assembly=ZYC.TilePyramid.Annotations.Wpf"
+             xmlns:zyc="https://github.com/ZiYuCai1984"
+             xmlns:ui="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI"
+             xmlns:commands="clr-namespace:ZYC.Framework.Modules.TilePyramid.Commands"
+             xmlns:annotationsui="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI.Annotations"
+             xmlns:recognitionReview="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI.RecognitionReview"
+             xmlns:debug="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI.Debug"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZYC.Framework.Modules.TilePyramid;component/Resources/Styles/Common.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Image and annotation layers share the full viewport and coordinate origin. -->
+        <Grid Grid.RowSpan="3"
+              ClipToBounds="True">
+            <wpf:TilePyramidView
+                x:Name="MainView"
+                Background="{StaticResource TilePyramidViewBackground}"
+                ImageBorderThickness="0"
+                PreviewMouseLeftButtonDown="MainView_OnAnnotationMouseDown"
+                PreviewMouseMove="MainView_OnAnnotationMouseMove"
+                PreviewMouseLeftButtonUp="MainView_OnAnnotationMouseUp"
+                PreviewMouseWheel="MainView_OnAnnotationMouseWheel"
+                LostMouseCapture="MainView_OnAnnotationCaptureLost"
+                NavigationStateChanged="MainView_OnNavigationStateChanged"
+                DiagnosticsChanged="MainView_OnDiagnosticsChanged"
+                MetricsChanged="MainView_OnMetricsChanged"
+                ContextMenuOpening="MainView_OnContextMenuOpening">
+                <!--<wpf:TilePyramidView.ContextMenu>
+                </wpf:TilePyramidView.ContextMenu>-->
+                <!--//TODO-zyc Supports injection of a ContextMenuItems-->
+            </wpf:TilePyramidView>
+            <annotations:TilePyramidAnnotationLayer x:Name="AnnotationLayer"
+                                                    EditingId="{Binding Editor.EditingId, ElementName=AnnotationInteraction}"
+                                                    View="{Binding ElementName=MainView}" />
+
+            <annotations:TilePyramidAnnotationInteractionLayer x:Name="AnnotationInteraction"
+                                                               View="{Binding ElementName=MainView}" />
+            <annotationsui:AnnotationSelectionMask x:Name="SelectionMask"
+                                                   Visibility="{Binding IsEditingAnnotation, Converter={zyc:BoolToVisibilityConverter}}" />
+        </Grid>
+
+        <zyc:Component Grid.Row="0"
+                       Type="ui:TopToolbarView"
+                       x:Name="TopToolbarView" />
+
+        <!-- Floating panels and the native editing-overlay opening stay between the toolbars. -->
+        <Grid Grid.Row="1"
+              x:Name="EditingSurface"
+              ClipToBounds="True">
+            <wpf:FloatingPanelHost Margin="12">
+                <wpf:FloatingPanelHost.Style>
+                    <Style TargetType="wpf:FloatingPanelHost">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsEditingAnnotation}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </wpf:FloatingPanelHost.Style>
+
+                <wpf:FloatingPanelHost.Resources>
+                    <ResourceDictionary>
+                        <Style TargetType="{x:Type zyc:HybridIcon}"
+                               BasedOn="{StaticResource HybridIcon16Style}" />
+                    </ResourceDictionary>
+                </wpf:FloatingPanelHost.Resources>
+
+
+                <Border x:Name="AnnotationPanelHost"
+                        wpf:FloatingPanelHost.Position="{Binding DocumentState.FloatingPanels[Annotations].Position}"
+                        wpf:FloatingPanelHost.Order="{Binding DocumentState.FloatingPanels[Annotations].Order}"
+                        wpf:FloatingPanelHost.RequestedWidth="{Binding DocumentState.FloatingPanels[Annotations].Width}"
+                        wpf:FloatingPanelHost.RequestedHeight="{Binding DocumentState.FloatingPanels[Annotations].Height}"
+                        wpf:FloatingPanelHost.FillHeight="{Binding DocumentState.FloatingPanels[Annotations].FillHeight}"
+                        Visibility="{Binding DocumentState.FloatingPanels[Annotations].IsVisible, Converter={zyc:BoolToVisibilityConverter}}"
+                        MinWidth="320"
+                        MinHeight="160"
+                        Style="{StaticResource FloatingPanelHostStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid
+                            Style="{StaticResource FloatingPanelHostHeaderStyle}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="8 0">
+                                <Run Text="{zyc:L Annotations}" />
+                                <Run Text=" (" />
+                                <Run Text="{Binding SavedAnnotationCount, Mode=OneWay}" />
+                                <Run Text=")" />
+                            </TextBlock>
+
+
+                            <ui:FloatPositionMenuView Grid.Column="2"
+                                                      Margin="0 0 4 0"
+                                                      SetPositionCommand="{Binding SetAnnotationsPanelPositionCommand}"
+                                                      HideCommand="{zyc:LifetimeScopeResolve commands:ToggleAnnotationsPanelCommand}" />
+                        </Grid>
+
+                        <zyc:Component Grid.Row="1"
+                                       Type="{x:Type annotationsui:AnnotationPanelView}" />
+                    </Grid>
+                </Border>
+                <Border x:Name="RecognitionPanelHost"
+                        wpf:FloatingPanelHost.Position="{Binding DocumentState.FloatingPanels[Recognition].Position}"
+                        wpf:FloatingPanelHost.Order="{Binding DocumentState.FloatingPanels[Recognition].Order}"
+                        wpf:FloatingPanelHost.RequestedWidth="{Binding DocumentState.FloatingPanels[Recognition].Width}"
+                        wpf:FloatingPanelHost.RequestedHeight="{Binding DocumentState.FloatingPanels[Recognition].Height}"
+                        wpf:FloatingPanelHost.FillHeight="{Binding DocumentState.FloatingPanels[Recognition].FillHeight}"
+                        Visibility="{Binding DocumentState.FloatingPanels[Recognition].IsVisible, Converter={zyc:BoolToVisibilityConverter}}"
+                        MinWidth="320"
+                        MinHeight="160"
+                        Style="{StaticResource FloatingPanelHostStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid
+                            Style="{StaticResource FloatingPanelHostHeaderStyle}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center"
+                                       Margin="8 0">
+                                <Run Text="{zyc:L Recognition and review}" />
+                                <Run Text=" · " />
+                                <Run Text="{zyc:L Pending review}" />
+                                <Run Text=" (" />
+                                <Run Text="{Binding PendingRecognitionCount, Mode=OneWay}" />
+                                <Run Text=")" />
+                            </TextBlock>
+
+
+                            <ui:FloatPositionMenuView Grid.Column="2"
+                                                      Margin="0 0 4 0"
+                                                      SetPositionCommand="{Binding SetRecognitionPanelPositionCommand}"
+                                                      HideCommand="{zyc:LifetimeScopeResolve commands:ToggleRecognitionPanelCommand}" />
+                        </Grid>
+
+                        <zyc:Component Grid.Row="1"
+                                       Type="{x:Type recognitionReview:RecognitionReviewPanelView}" />
+                    </Grid>
+                </Border>
+
+
+                <Border x:Name="MinimapHost"
+                        wpf:FloatingPanelHost.Position="{Binding DocumentState.FloatingPanels[Minimap].Position}"
+                        wpf:FloatingPanelHost.Order="{Binding DocumentState.FloatingPanels[Minimap].Order}"
+                        wpf:FloatingPanelHost.RequestedWidth="{Binding DocumentState.FloatingPanels[Minimap].Width}"
+                        wpf:FloatingPanelHost.RequestedHeight="{Binding DocumentState.FloatingPanels[Minimap].Height}"
+                        wpf:FloatingPanelHost.FillHeight="{Binding DocumentState.FloatingPanels[Minimap].FillHeight}"
+                        Visibility="{Binding DocumentState.FloatingPanels[Minimap].IsVisible, Converter={zyc:BoolToVisibilityConverter}}"
+                        MinWidth="160"
+                        MinHeight="100"
+                        Style="{StaticResource FloatingPanelHostStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid Style="{StaticResource FloatingPanelHostHeaderStyle}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{zyc:L Minimap}"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="8 0 0 0" />
+
+                            <StackPanel Orientation="Horizontal"
+                                        Grid.Column="2"
+                                        VerticalAlignment="Center">
+                                <RadioButton Content="1x"
+                                             Style="{StaticResource MinimapSizeButtonStyle}"
+                                             ToolTip="{zyc:L Minimap size: 1x}">
+                                    <RadioButton.CommandParameter>
+                                        <sys:Double>1</sys:Double>
+                                    </RadioButton.CommandParameter>
+                                </RadioButton>
+                                <RadioButton Content="2x"
+                                             Style="{StaticResource MinimapSizeButtonStyle}"
+                                             ToolTip="{zyc:L Minimap size: 2x}">
+                                    <RadioButton.CommandParameter>
+                                        <sys:Double>2</sys:Double>
+                                    </RadioButton.CommandParameter>
+                                </RadioButton>
+                                <ui:FloatPositionMenuView
+                                    Margin="0 0 4 0"
+                                    SetPositionCommand="{Binding SetMinimapPositionCommand}"
+                                    HideCommand="{zyc:LifetimeScopeResolve commands:ToggleMinimapCommand}" />
+                            </StackPanel>
+                        </Grid>
+
+
+                        <Border Grid.Row="1"
+                                BorderThickness="2 0 2 2"
+                                BorderBrush="{StaticResource MahApps.Brushes.Gray8}">
+                            <wpf:TilePyramidMinimap x:Name="Minimap"
+                                                    Background="{StaticResource TilePyramidViewBackground}"
+                                                    View="{Binding ElementName=MainView}"
+                                                    ViewportBrush="{StaticResource MiniMapViewportBrush}"
+                                                    ViewportBorderBrush="{StaticResource MiniMapViewportBorderBrush}"
+                                                    ViewportBorderThickness="1.5">
+                                <wpf:TilePyramidMinimap.Overlay>
+                                    <annotations:TilePyramidAnnotationMinimapLayer
+                                        x:Name="MinimapAnnotationLayer"
+                                        View="{Binding OverviewView, RelativeSource={RelativeSource AncestorType={x:Type wpf:TilePyramidMinimap}}}" />
+                                </wpf:TilePyramidMinimap.Overlay>
+                            </wpf:TilePyramidMinimap>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border x:Name="DocumentInfoHost"
+                        wpf:FloatingPanelHost.Position="{Binding DocumentState.FloatingPanels[DocumentInfo].Position}"
+                        wpf:FloatingPanelHost.Order="{Binding DocumentState.FloatingPanels[DocumentInfo].Order}"
+                        wpf:FloatingPanelHost.RequestedWidth="{Binding DocumentState.FloatingPanels[DocumentInfo].Width}"
+                        wpf:FloatingPanelHost.RequestedHeight="{Binding DocumentState.FloatingPanels[DocumentInfo].Height}"
+                        wpf:FloatingPanelHost.FillHeight="{Binding DocumentState.FloatingPanels[DocumentInfo].FillHeight}"
+                        Visibility="{Binding DocumentState.FloatingPanels[DocumentInfo].IsVisible, Converter={zyc:BoolToVisibilityConverter}}"
+                        MinWidth="220"
+                        MinHeight="120"
+                        MaxHeight="520"
+                        Style="{StaticResource FloatingPanelHostStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid Style="{StaticResource FloatingPanelHostHeaderStyle}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{zyc:L Information}"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="8 0" />
+
+                            <ui:FloatPositionMenuView Grid.Column="2"
+                                                      Margin="0 0 4 0"
+                                                      SetPositionCommand="{Binding SetDocumentInfoPositionCommand}"
+                                                      HideCommand="{zyc:LifetimeScopeResolve commands:ToggleDocumentInfoCommand}" />
+                        </Grid>
+
+                        <zyc:Component Grid.Row="1"
+                                       Type="{x:Type ui:DocumentInfoView}" />
+
+                    </Grid>
+                </Border>
+
+
+
+
+                <Border x:Name="DebugPanelHost"
+                        wpf:FloatingPanelHost.Position="{Binding DocumentState.FloatingPanels[Debug].Position}"
+                        wpf:FloatingPanelHost.Order="{Binding DocumentState.FloatingPanels[Debug].Order}"
+                        wpf:FloatingPanelHost.RequestedWidth="{Binding DocumentState.FloatingPanels[Debug].Width}"
+                        wpf:FloatingPanelHost.RequestedHeight="{Binding DocumentState.FloatingPanels[Debug].Height}"
+                        wpf:FloatingPanelHost.FillHeight="{Binding DocumentState.FloatingPanels[Debug].FillHeight}"
+                        Visibility="{Binding DocumentState.FloatingPanels[Debug].IsVisible, Converter={zyc:BoolToVisibilityConverter}}"
+                        MinWidth="320"
+                        MinHeight="160"
+                        Style="{StaticResource FloatingPanelHostStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid
+                            Style="{StaticResource FloatingPanelHostHeaderStyle}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center"
+                                       Margin="8 0">
+                                <Run Text="{zyc:L Debug}" />
+                            </TextBlock>
+
+
+                            <ui:FloatPositionMenuView Grid.Column="2"
+                                                      Margin="0 0 4 0"
+                                                      SetPositionCommand="{Binding SetDebugPanelPositionCommand}"
+                                                      HideCommand="{zyc:LifetimeScopeResolve commands:ToggleDebugPanelCommand}" />
+                        </Grid>
+
+                        <zyc:Component Grid.Row="1"
+                                       Type="{x:Type debug:DebugPanelView}" />
+                    </Grid>
+                </Border>
+
+
+            </wpf:FloatingPanelHost>
+
+
+
+
+
+            <Border x:Name="EditingInputBlocker"
+                    Background="Transparent"
+                    Visibility="Collapsed" />
+            <Border Visibility="{Binding IsEditingAnnotation, Converter={zyc:BoolToVisibilityConverter}}"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Stretch"
+                    Background="{StaticResource EditingAnnotationMaskBackground}"
+                    Padding="10">
+                <StackPanel HorizontalAlignment="Center"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            x:Name="AnnotationEditingHintHost">
+                    <TextBlock Text="{zyc:LBinding AnnotationEditingHint}"
+                               TextWrapping="Wrap"
+                               Foreground="White"
+                               VerticalAlignment="Center"
+                               Margin="0,0,12,0" />
+                    <zyc:IconButton Text="{zyc:LBinding AnnotationConfirmationText}"
+                                    Visibility="{Binding ShowAnnotationConfirmation, Converter={zyc:BoolToVisibilityConverter}}"
+                                    IsEnabled="{Binding CanConfirmAnnotation}"
+                                    Margin="0,0,8,0"
+                                    Kind="Check"
+                                    Click="ConfirmAnnotation_OnClick" />
+                    <zyc:IconButton Text="{zyc:L Cancel}"
+                                    Kind="Close"
+                                    Click="CancelAnnotation_OnClick" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <zyc:Component Grid.Row="2"
+                       x:Name="BottomToolbarView"
+                       Type="ui:BottomToolbarView"
+                       Background="{StaticResource ToolbarBackground}"
+                       IsEnabled="{Binding ElementName=MainView,Path=IsViewInitialized}" />
+
+    </Grid>
+
+</UserControl>

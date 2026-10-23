@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="ZYC.Framework.Modules.TilePyramid.UI.DocumentInfoView"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:zyc="https://github.com/ZiYuCai1984"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:ui="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI"
+             mc:Ignorable="d"
+             Background="White"
+             d:DesignHeight="450" 
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=ui:TilePyramidDocumentView}">
+    <UserControl.Resources>
+        <DataTemplate x:Key="DocumentInformationItemTemplate">
+            <Grid Margin="0 0 0 4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="96" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Key}"
+                           TextWrapping="Wrap"
+                           Margin="0 0 8 0"
+                           Opacity="0.75" />
+                <TextBlock Grid.Column="1"
+                           Text="{Binding Value, Mode=OneWay}"
+                           TextWrapping="Wrap"
+                           Background="Transparent" />
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer
+        HorizontalScrollBarVisibility="Disabled"
+        VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="8 8 8 8">
+            <DockPanel Margin="0 0 0 8">
+                <Button DockPanel.Dock="Right"
+                        Command="{Binding RotateLabelImageCommand}"
+                        CommandParameter="{Binding DocumentState}">
+                    <iconPacks:PackIconMaterial Kind="RotateRight"
+                                                Width="16"
+                                                Height="16" />
+                </Button>
+                <TextBlock Text="{Binding LabelImageTitle}"
+                           Opacity="0.75"
+                           VerticalAlignment="Center" />
+            </DockPanel>
+            <Grid Width="180"
+                  Height="180"
+                  Margin="0 0 0 8"
+                  Visibility="{Binding HasLabelImage, Converter={zyc:BoolToVisibilityConverter}}">
+                <Image Source="{Binding LabelImage}"
+                       Stretch="Uniform"
+                       RenderOptions.BitmapScalingMode="HighQuality">
+                    <Image.LayoutTransform>
+                        <RotateTransform Angle="{Binding DocumentState.LabelImageRotation}" />
+                    </Image.LayoutTransform>
+                </Image>
+            </Grid>
+            <TextBlock Text="{Binding LabelImageStatus}"
+                       Margin="0 0 0 8"
+                       Opacity="0.65"
+                       TextWrapping="Wrap">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasLabelImage}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Separator Margin="0 0 0 8" />
+            <ItemsControl ItemsSource="{Binding DocumentInformation}"
+                          ItemTemplate="{StaticResource DocumentInformationItemTemplate}" />
+            <Separator Margin="0 0 0 8" />
+            <ItemsControl ItemsSource="{Binding DocumentTechnicalInformation}"
+                          ItemTemplate="{StaticResource DocumentInformationItemTemplate}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

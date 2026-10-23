@@ -1,0 +1,9 @@
+﻿.vs/
+_bin/
+_bin_build/
+bin/
+obj/
+
+*.user
+
+_temp.sln

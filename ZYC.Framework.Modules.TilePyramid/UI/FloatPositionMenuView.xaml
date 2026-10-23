@@ -1,0 +1,172 @@
+﻿<Menu x:Class="ZYC.Framework.Modules.TilePyramid.UI.FloatPositionMenuView"
+      x:ClassModifier="internal"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      xmlns:ui="clr-namespace:ZYC.Framework.Modules.TilePyramid.UI"
+      xmlns:core="clr-namespace:ZYC.TilePyramid.Core;assembly=ZYC.TilePyramid.Core"
+      mc:Ignorable="d"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      AllowDrop="True"
+      VerticalAlignment="Center"
+      Background="Transparent"
+      x:Name="Root">
+    <!--!WARNING Do not set DataContext="{Binding RelativeSource={RelativeSource Self}}" on the root Menu.
+        Bindings supplied by callers for dependency properties also use this Menu's DataContext.
+        For example, {Binding SetMinimapPositionCommand} would look on this control instead of the inherited
+        document view, leaving SetPositionCommand unset. Keep the root DataContext inherited and bind only
+        the inner MenuItem's DataContext to Root so its children can access this control's dependency properties.
+    -->
+    <Menu.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZYC.Framework.Modules.TilePyramid;component/Resources/Styles/Common.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Menu.Resources>
+
+
+    <MenuItem Padding="7 5 8 6"
+              Background="Transparent"
+              VerticalAlignment="Center"
+              ItemContainerStyle="{StaticResource FloatPositionMenuItemStyle}"
+              DataContext="{Binding ElementName=Root}">
+
+        <MenuItem.Header>
+            <iconPacks:PackIconMaterial Kind="DockWindow"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Width="16"
+                                        Height="16" />
+        </MenuItem.Header>
+        <MenuItem.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Rows="3" Columns="3" />
+            </ItemsPanelTemplate>
+        </MenuItem.ItemsPanel>
+
+        <MenuItem
+            Command="{Binding SetPositionCommand}"
+            CommandParameter="{x:Static core:FloatPosition.TopLeft}">
+            <MenuItem.Header>
+                <iconPacks:PackIconMaterial Kind="BorderStyle"
+                                            Width="16"
+                                            Height="16"
+                                            RenderTransformOrigin="0.5,0.5" />
+            </MenuItem.Header>
+        </MenuItem>
+        <MenuItem
+            Command="{Binding SetPositionCommand}"
+            CommandParameter="{x:Static core:FloatPosition.Top}">
+            <MenuItem.Header>
+                <iconPacks:PackIconMaterial Kind="BorderTopVariant"
+                                            Width="16"
+                                            Height="16"
+                                            RenderTransformOrigin="0.5,0.5" />
+            </MenuItem.Header>
+        </MenuItem>
+        <MenuItem
+            Command="{Binding SetPositionCommand}"
+            CommandParameter="{x:Static core:FloatPosition.TopRight}">
+            <MenuItem.Header>
+                <iconPacks:PackIconMaterial Kind="BorderStyle"
+                                            Width="16"
+                                            Height="16"
+                                            RenderTransformOrigin="0.5,0.5">
+                    <iconPacks:PackIconMaterial.RenderTransform>
+                        <RotateTransform Angle="90" />
+                    </iconPacks:PackIconMaterial.RenderTransform>
+                </iconPacks:PackIconMaterial>
+            </MenuItem.Header>
+        </MenuItem>
+        <MenuItem
+            Command="{Binding SetPositionCommand}"
+            CommandParameter="{x:Static core:FloatPosition.Left}">
+            <MenuItem.Header>
+                <iconPacks:PackIconMaterial Kind="BorderTopVariant"
+                                            Width="16"
+                                            Height="16"
+                                            RenderTransformOrigin="0.5,0.5">
+                    <iconPacks:PackIconMaterial.RenderTransform>
+                        <RotateTransform Angle="-90" />
+                    </iconPacks:PackIconMaterial.RenderTransform>
+                </iconPacks:PackIconMaterial>
+            </MenuItem.Header>
+        </MenuItem>
+
+
+        <MenuItem
+            Command="{Binding HideCommand}"
+            CommandParameter="{Binding DocumentState,RelativeSource={RelativeSource AncestorType={x:Type ui:TilePyramidDocumentView}}}">
+            <MenuItem.Header>
+                <iconPacks:PackIconMaterial Kind="EyeOffOutline"
+                                            Width="16"
+                                            Height="16" />
+            </MenuItem.Header>
+        </MenuItem>
+
+        <MenuItem
+            Command="{Binding SetPositionCommand}"
+            CommandParameter="{x:Static core:FloatPosition.Right}">
+            <MenuItem.Header>
+                <iconPacks:PackIconMaterial Kind="BorderTopVariant"
+                                            Width="16"
+                                            Height="16"
+                                            RenderTransformOrigin="0.5,0.5">
+                    <iconPacks:PackIconMaterial.RenderTransform>
+                        <RotateTransform Angle="90" />
+                    </iconPacks:PackIconMaterial.RenderTransform>
+                </iconPacks:PackIconMaterial>
+            </MenuItem.Header>
+        </MenuItem>
+        <MenuItem
+            Command="{Binding SetPositionCommand}"
+            CommandParameter="{x:Static core:FloatPosition.BottomLeft}">
+            <MenuItem.Header>
+                <iconPacks:PackIconMaterial Kind="BorderStyle"
+                                            Width="16"
+                                            Height="16"
+                                            RenderTransformOrigin="0.5,0.5">
+                    <iconPacks:PackIconMaterial.RenderTransform>
+                        <RotateTransform Angle="-90" />
+                    </iconPacks:PackIconMaterial.RenderTransform>
+                </iconPacks:PackIconMaterial>
+            </MenuItem.Header>
+        </MenuItem>
+
+
+        <MenuItem
+            Command="{Binding SetPositionCommand}"
+            CommandParameter="{x:Static core:FloatPosition.Bottom}">
+            <MenuItem.Header>
+                <iconPacks:PackIconMaterial Kind="BorderTopVariant"
+                                            Width="16"
+                                            Height="16"
+                                            RenderTransformOrigin="0.5,0.5">
+                    <iconPacks:PackIconMaterial.RenderTransform>
+                        <RotateTransform Angle="-180" />
+                    </iconPacks:PackIconMaterial.RenderTransform>
+                </iconPacks:PackIconMaterial>
+            </MenuItem.Header>
+        </MenuItem>
+
+        <MenuItem
+            Command="{Binding SetPositionCommand}"
+            CommandParameter="{x:Static core:FloatPosition.BottomRight}">
+            <MenuItem.Header>
+                <iconPacks:PackIconMaterial Kind="BorderStyle"
+                                            Width="16"
+                                            Height="16"
+                                            RenderTransformOrigin="0.5,0.5">
+                    <iconPacks:PackIconMaterial.RenderTransform>
+                        <RotateTransform Angle="180" />
+                    </iconPacks:PackIconMaterial.RenderTransform>
+                </iconPacks:PackIconMaterial>
+            </MenuItem.Header>
+        </MenuItem>
+    </MenuItem>
+
+</Menu>

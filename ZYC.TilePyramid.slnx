@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/Build/">
+    <Project Path="Entry/Entry.csproj" />
+    <Project Path="ZYC.TilePyramid.Build.NuGet/ZYC.TilePyramid.Build.NuGet.csproj" Id="61265907-f19e-4d2b-a2ac-8b8b9460ad9d" />
+  </Folder>
+  <Folder Name="/Core/">
+    <Project Path="ZYC.TilePyramid.Core/ZYC.TilePyramid.Annotations.Wpf/ZYC.TilePyramid.Annotations.Wpf.csproj" />
+    <Project Path="ZYC.TilePyramid.Core/ZYC.TilePyramid.Annotations/ZYC.TilePyramid.Annotations.csproj" />
+    <Project Path="ZYC.TilePyramid.Core/ZYC.TilePyramid.Core/ZYC.TilePyramid.Core.csproj" />
+    <Project Path="ZYC.TilePyramid.Core/ZYC.TilePyramid.Wpf/ZYC.TilePyramid.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".github/workflows/publish-nuget-manual.yml" />
+    <File Path=".gitignore" />
+    <File Path="AGENTS.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="ZYC.Framework.Modules.TilePyramid/README.md" />
+  </Folder>
+  <Project Path="ZYC.Framework.Modules.TilePyramid.Abstractions/ZYC.Framework.Modules.TilePyramid.Abstractions.csproj" />
+  <Project Path="ZYC.Framework.Modules.TilePyramid/ZYC.Framework.Modules.TilePyramid.csproj" />
+</Solution>
