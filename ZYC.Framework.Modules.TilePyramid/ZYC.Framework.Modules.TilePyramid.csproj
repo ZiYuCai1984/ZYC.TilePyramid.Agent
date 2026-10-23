@@ -39,10 +39,11 @@
 
   <ItemGroup>
     <Content Include="TilePyramid.TilePyramidLanguageResourcesConfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
-      <PackagePath>contentFiles\any\any;content</PackagePath>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <PackagePath>lib\$(TargetFramework)$(TargetPlatformVersion)\TilePyramid.TilePyramidLanguageResourcesConfig.json</PackagePath>
     </Content>
   </ItemGroup>
+
 
 </Project>
