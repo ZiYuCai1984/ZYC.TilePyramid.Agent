@@ -16,7 +16,7 @@
     <File Path="AGENTS.md" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
-    <File Path="ZYC.Framework.Modules.TilePyramid/README.md" />
+    <File Path="README.md" />
   </Folder>
   <Project Path="ZYC.Framework.Modules.TilePyramid.Abstractions/ZYC.Framework.Modules.TilePyramid.Abstractions.csproj" />
   <Project Path="ZYC.Framework.Modules.TilePyramid/ZYC.Framework.Modules.TilePyramid.csproj" />

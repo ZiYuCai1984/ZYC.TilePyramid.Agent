@@ -1,6 +1,7 @@
-﻿using Autofac;
-using ZYC.CoreToolkit;
+﻿using System.IO;
+using Autofac;
 using ZYC.CoreToolkit.Extensions.Autofac;
+using ZYC.CoreToolkit.Extensions.Settings;
 using ZYC.Framework.Abstractions.MainMenu;
 using ZYC.Framework.Core;
 using ZYC.Framework.Modules.TilePyramid.Abstractions;
@@ -28,6 +29,7 @@ internal class Module : ModuleBase
         lifetimeScope.RegisterDefaultStatusBarItem<TilePyramidDocumentStatusBarItem>();
         lifetimeScope.RegisterDefaultStatusBarItem<TilePyramidAgentTaskStatusBarItem>();
 
+
         return Task.CompletedTask;
     }
 
@@ -43,6 +45,33 @@ internal class Module : ModuleBase
         {
             stateStore.Dispose();
         }
+
         return Task.CompletedTask;
+    }
+
+    public override Task RegisterAsync(ContainerBuilder builder)
+    {
+        try
+        {
+            var assemblyDirectory = Path.GetDirectoryName(
+                typeof(Module).Assembly.Location);
+
+            if (string.IsNullOrEmpty(assemblyDirectory))
+            {
+                throw new InvalidOperationException(
+                    $"Cannot resolve assembly directory for {typeof(Module).Assembly.FullName}.");
+            }
+
+            var result = SettingsTools.GetFromFolderGeneric(
+                assemblyDirectory, typeof(TilePyramidLanguageResourcesConfig));
+            builder.RegisterConfigR(result);
+        }
+        catch
+        {
+            //ignore
+        }
+
+
+        return base.RegisterAsync(builder);
     }
 }

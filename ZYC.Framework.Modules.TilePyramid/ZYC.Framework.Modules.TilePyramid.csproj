@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <Enable_Target_CopyDebugJsonToSettingsOutput>true</Enable_Target_CopyDebugJsonToSettingsOutput>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   
@@ -34,6 +33,7 @@
     <PackageReference Include="Emoji.Wpf" />
     <PackageReference Include="System.Reactive" />
     <PackageReference Include="ZYC.CoreToolkit.Extensions.Autofac" />
+    <PackageReference Include="ZYC.CoreToolkit.Extensions.Settings" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" />
   </ItemGroup>
 
