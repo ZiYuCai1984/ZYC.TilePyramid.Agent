@@ -1,0 +1,3 @@
+[submodule "ZYC.TilePyramid.Core"]
+	path = ZYC.TilePyramid.Core
+	url = https://github.com/ZiYuCai1984/ZYC.TilePyramid.Core.git
