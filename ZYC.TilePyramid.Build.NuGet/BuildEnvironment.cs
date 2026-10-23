@@ -20,7 +20,7 @@ public static class BuildEnvironment
 
     public static string EntryProjectCsprojPath => Path.Combine(EntryProjectPath, "Entry.csproj");
 
-    public static string BuildVersion => "1.0.0";
+    public static string BuildVersion => "1.0.1";
 
 
     public static string GetProjectRootFolderPath()
